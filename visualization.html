@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.8"></script>
+</head>
+<body>
+  <div id="vis"/>
+  <script>
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 800,
+  "height": 450,
+  "title": "Beijing 2022 Olympic winter games",
+  "projection": {"type": "equalEarth"},
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/JiazhouLiu/FIT3179/main/VegaLite/2_symbol_map/js/ne_110m_admin_0_countries.topojson",
+        "format": {"type": "topojson", "feature": "ne_110m_admin_0_countries"}
+      },
+      "mark": {"type": "geoshape", "fill": "lightgray", "stroke": "white"}
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/LitaoC/3179/main/medals_total.csv"
+      },
+      "projection": {"type": "orthographic", "rotate": [30, 60, 0]},
+      "transform": [
+        {
+          "lookup": "country",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JiazhouLiu/FIT3179/main/VegaLite/2_symbol_map/js/ne_110m_admin_0_countries.topojson"
+            },
+            "key": "ne_110m_admin_0_countries",
+            "fields": ["Olymic winter game"]
+          }
+        }
+      ],
+      "mark": {"type": "circle", "tooltip": {"content": "data"}},
+      "encoding": {
+        "key": {"field": "Country"},
+        "size": {"field": "Gold", "type": "quantitative", "title": "Gold "},
+        "color": {
+          "field": "Total",
+          "type": "quantitative",
+          "title": "Toal gold",
+          "scale": {"scheme": "reds"}
+        }
+      }
+    }
+  ],
+  "config": {}
+};
+    vegaEmbed("#vis", spec, {mode: "vega-lite"}).then(console.log).catch(console.warn);
+  </script>
+</body>
+</html>
