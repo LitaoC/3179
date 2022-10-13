@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Embedding Vega-Lite</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.5.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.21.0"></script>
+</head>
+
+<body>
+    <div id="vis"></div>
+
+    <script type="text/javascript">
+        var MyMap = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "title": "Beijing 2020 olympic winter game",
+            "width": 800,
+            "height": 400,
+            "projection": { "type": "equirectangular" },
+
+            "layer": [
+                {
+                    "data": { "sphere": true },
+                    "mark": { "type": "geoshape", "fill": "aliceblue" }
+                },
+                {
+                    "data": {
+                        "url": "https://raw.githubusercontent.com/JiazhouLiu/FIT3179/main/VegaLite/3_choropleth_map/js/ne_110m_admin_0_countries.topojson",
+                        "format": { "type": "topojson", "feature": "ne_110m_admin_0_countries" }
+                    },
+                    "transform": [
+                        {
+                            "lookup": "properties.SU_A3",
+                            "from": {
+                                "data": {
+                                    "url": "https://raw.githubusercontent.com/LitaoC/3179/main/medals_total.csv"
+                                },
+                                "key": "Country Code",
+                                "fields": ["Total"]
+                            }
+                        }
+                    ],
+
+                    "mark": { "type": "geoshape", "stroke": "black" },
+                    "encoding": {
+                        "color": {
+                            "field": "Total",
+                            "type": "quantitative"
+                        },
+                        "tooltip": [
+                            { "field": "properties.SU_A3", "type": "nominal", "title": "Country" },
+                            { "field": "Total", "type": "quantitative", "title": "Total medals" }
+                        ]
+                    }
+                }
+            ]
+        }
+        vegaEmbed('#vis', MyMap);
+    </script>
+    <div id="vis2"></div>
+    <script type="text/javascript">
+        var Medal_bar = {
+            $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+            data: {
+                url: 'https://raw.githubusercontent.com/LitaoC/3179/main/medals_total.csv'
+            },
+            params: [
+                {
+                    name: "Medals_selection",
+                    value: 5,
+                    bind: {
+                        input: "range",
+                        min: 0,
+                        max: 16,
+                        step: 1,
+                        name: "Medals win :"
+                    }
+                }
+            ],
+            vconcat: [
+                {
+                    width: "container",
+                    height: 240,
+                    mark: "bar",
+                    title: "Beijing 2022 Olympic Winter Games",
+                    encoding: {
+                        x: {
+                            field: "Country",
+                            type: "nominal",
+                            axis: { "title": "Country" }
+                        },
+                        y: {
+                            field: "Gold",
+                            type: "quantitative",
+                            axis: { "title": "Total gold win" }
+                        },
+                        color: { "field": "Gold", "type": "quantitative", "title": "No. of medals" },
+                        tooltip: [
+                            { field: "Country", "type": "nominal" },
+                            { field: "Gold", "type": "ordinal", "title": "Gold win" }
+                        ]
+                    },
+                    transform: [{ filter: "datum.Gold >= Medals_selection" }]
+                },
+                {
+                    width: "container",
+                    height: 240,
+                    mark: "bar",
+                    encoding: {
+                        x: {
+                            "field": "Country",
+                            "type": "nominal",
+                            "axis": { "title": "Country" }
+                        },
+                        y: {
+                            "field": "Silver",
+                            "type": "quantitative",
+                            "axis": { "title": "Total silver win" }
+                        },
+                        "color": { "field": "Silver", "type": "quantitative" },
+                        tooltip: [
+                            { "field": "Country", "type": "nominal" },
+                            { "field": "Sliver", "type": "ordinal", "title": "Silver win" }
+                        ]
+                    },
+                    transform: [{ "filter": "datum.Silver >= Medals_selection" }]
+                }
+            ],
+        }
+        vegaEmbed('#vis2', Medal_bar);
+    </script>
+
+    <div id="vis3"></div>
+    <script type="text/javascript">
+        var Radial_chart3 = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "title": "Medals won by China",
+            "data": { "values": [9, 4, 2] },
+            "layer": [
+                { "mark": { "type": "arc", "innerRadius": 20, "stroke": "#fffdfd" } },
+                {
+                    "mark": { "type": "text", "radiusOffset": 10 },
+                    "encoding": { "text": { "field": "data", "type": "quantitative" } }
+                }
+            ],
+            "encoding": {
+                "theta": { "field": "data", "type": "quantitative", "stack": true },
+                "radius": {
+                    "field": "data",
+                    "scale": { "type": "sqrt", "zero": true, "rangeMin": 20 }
+                },
+                "color": { "field": "data", "type": "nominal", "legend": null },
+                "tooltip": [
+                    { "field": "data", "type": "nominal", "title": "Gold" }
+                ]
+            }
+        }
+        vegaEmbed("#vis3", Radial_chart3);
+    </script>
+
+    <div id="vis4"></div>
+    <script type="text/javascript">
+        var Radial_chart1 = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "title": "Medals won by Norway",
+            "data": { "values": [16, 8, 13] },
+            "layer": [
+                { "mark": { "type": "arc", "innerRadius": 20, "stroke": "#fffdfd" } },
+                {
+                    "mark": { "type": "text", "radiusOffset": 10 },
+                    "encoding": { "text": { "field": "data", "type": "quantitative" } }
+                }
+            ],
+            "encoding": {
+                "theta": { "field": "data", "type": "quantitative", "stack": true },
+                "radius": {
+                    "field": "data",
+                    "scale": { "type": "sqrt", "zero": true, "rangeMin": 20 }
+                },
+                "color": { "field": "data", "type": "nominal", "legend": null },
+                
+            }
+        }
+        vegaEmbed("#vis4", Radial_chart1)
+    </script>
+    <div id="vis5"></div>
+    <script type="text/javascript">
+        var Radial_chart2 = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "title": "Medals won by Germany",
+            "data": { "values": [12, 10, 5] },
+            "layer": [
+                { "mark": { "type": "arc", "innerRadius": 20, "stroke": "#fffdfd" } },
+                {
+                    "mark": { "type": "text", "radiusOffset": 10 },
+                    "encoding": { "text": { "field": "data", "type": "quantitative" } }
+                }
+            ],
+            "encoding": {
+                "theta": { "field": "data", "type": "quantitative", "stack": true },
+                "radius": {
+                    "field": "data",
+                    "scale": { "type": "sqrt", "zero": true, "rangeMin": 20 }
+                },
+                "color": { "field": "data", "type": "nominal", "title": "Medal" }
+
+            }
+        }
+        vegaEmbed("#vis5", Radial_chart2)
+    </script>
+</body>
+
+</html>
